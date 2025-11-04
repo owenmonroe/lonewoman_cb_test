@@ -1,40 +1,57 @@
 {% comment %}
-Show other items that share this page's group_id.
-Expects CSV fields: objectid, title, group_id, version_type
-Order: Original → Full Reprint → Truncated Reprint → (anything else)
+Related docs by group_id, ordered: Original → Direct Reprint → Truncated Reprint.
+Format: VersionType: "Title," Creator
+Links: title only → /items/:objectid.html
 {% endcomment %}
 
 {% if page.group_id %}
   {% assign all_items = site.data[site.metadata] %}
   {% assign group = all_items | where: "group_id", page.group_id %}
-
   {% if group and group.size > 1 %}
-    <section class="related-documents mt-4">
+    <section class="related-documents">
       <h3 class="h5">Related Documents</h3>
-      <ul class="mb-0">
-        {%- assign types = "Original|Full Reprint|Truncated Reprint" | split: "|" -%}
+      <ul>
+        {% assign order = "Original|Direct Reprint|Truncated Reprint" | split: "|" %}
 
-        {%- comment -%} pass 1–3: preferred order {%- endcomment -%}
-        {%- for t in types -%}
-          {%- for it in group -%}
-            {%- if it.objectid != page.objectid and it.version_type == t -%}
+        {% comment %} # pass 1–3 in preferred order # {% endcomment %}
+        {% for t in order %}
+          {% for it in group %}
+            {% if it.objectid != page.objectid and it.version_type == t %}
+              {% assign t_clean = it.title | strip %}
+              {% assign last = t_clean | slice: -1, 1 %}
+              {% if last == ',' or last == '!' or last == '?' or last == ':' or last == ';' or last == '.' %}
+                {% assign title_display = t_clean %}
+              {% else %}
+                {% assign title_display = t_clean | append: ',' %}
+              {% endif %}
               <li>
-                <a href="{{ '/items/' | append: it.objectid | relative_url }}">{{ it.title }}</a>
-                {% if it.version_type %} ({{ it.version_type }}){% endif %}
+                {{ it.version_type }}:
+                <a href="{{ '/items/' | append: it.objectid | append: '.html' | relative_url }}">“{{ title_display }}”</a>
+                {% if it.creator %} {{ it.creator }}{% endif %}
               </li>
-            {%- endif -%}
-          {%- endfor -%}
-        {%- endfor -%}
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
 
-        {%- comment -%} pass 4: anything with a different/blank version_type {%- endcomment -%}
-        {%- for it in group -%}
-          {%- if it.objectid != page.objectid and types contains it.version_type == false -%}
-            <li>
-              <a href="{{ '/items/' | append: it.objectid | relative_url }}">{{ it.title }}</a>
-              {% if it.version_type %} ({{ it.version_type }}){% endif %}
-            </li>
-          {%- endif -%}
-        {%- endfor -%}
+        {% comment %} # pass 4: anything with other/blank version_type # {% endcomment %}
+        {% for it in group %}
+          {% unless order contains it.version_type %}
+            {% if it.objectid != page.objectid %}
+              {% assign t_clean = it.title | strip %}
+              {% assign last = t_clean | slice: -1, 1 %}
+              {% if last == ',' or last == '!' or last == '?' or last == ':' or last == ';' or last == '.' %}
+                {% assign title_display = t_clean %}
+              {% else %}
+                {% assign title_display = t_clean | append: ',' %}
+              {% endif %}
+              <li>
+                {{ it.version_type | default: 'Related' }}:
+                <a href="{{ '/items/' | append: it.objectid | append: '.html' | relative_url }}">“{{ title_display }}”</a>
+                {% if it.creator %} {{ it.creator }}{% endif %}
+              </li>
+            {% endif %}
+          {% endunless %}
+        {% endfor %}
       </ul>
     </section>
   {% endif %}
