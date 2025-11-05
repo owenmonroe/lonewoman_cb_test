@@ -7,7 +7,7 @@ permalink: /subjects.html
 cloud-fields: site.data.theme.subjects-fields
 ---
 
-## Browse Subjects
+## Browse Tropes
 
-Use this word cloud visualization to browse terms and subjects.
+Use this word cloud visualization to browse article tropes.
 Word size is determined by frequency and all words link to a corresponding collection search.

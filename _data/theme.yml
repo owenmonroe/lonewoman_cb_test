@@ -38,6 +38,7 @@ subjects-fields: subject # set of fields separated by ; to be featured in the cl
 subjects-min: 1 # min size for subject cloud, too many terms = slow load time!
 subjects-stopwords: # set of subjects separated by ; that will be removed from display, e.g. boxers;boxing
 
+
 ##########
 # LOCATIONS PAGE
 #
