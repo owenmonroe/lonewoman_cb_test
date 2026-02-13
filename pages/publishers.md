@@ -5,17 +5,17 @@ permalink: /publishers/
 ---
 
 {%- comment -%}
-Lists items grouped by publisher (creator), A→Z.
-Assumes CSV has `creator`, `title`, `objectid`, optionally `date`.
+Lists items grouped by publisher (publication), A→Z.
+Assumes CSV has `publication`, `title`, `objectid`, optionally `date`.
 {%- endcomment -%}
 
 {%- assign all = site.data[site.metadata] -%}
 
-{%- comment -%} Filter to only items that have a creator value {%- endcomment -%}
-{%- assign with_creator = all | where_exp: 'r', 'r.creator and r.creator != ""' -%}
+{%- comment -%} Filter to only items that have a publication value {%- endcomment -%}
+{%- assign with_creator = all | where_exp: 'r', 'r.publication and r.publication != ""' -%}
 
-{%- comment -%} Group by creator and sort groups by name {%- endcomment -%}
-{%- assign groups = with_creator | group_by: 'creator' | sort: 'name' -%}
+{%- comment -%} Group by publication and sort groups by name {%- endcomment -%}
+{%- assign groups = with_creator | group_by: 'publication' | sort: 'name' -%}
 
 {%- if groups.size == 0 -%}
 <p><em>No publishers found.</em></p>
